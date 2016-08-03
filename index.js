@@ -112,20 +112,25 @@ export default class RelayCacheManager {
   }
   clear() {
     return;
-  },
+  };
+
   getMutationWriter() {
     return this.cacheWriter;
-  },
+  };
+
   getQueryWriter() {
     return this.cacheWriter;
-  },
+  };
+
   getAllRecords() {
     return this.cacheWriter.cache.records;
-  },
+  };
+  
   readNode(id, callback) {
     const node = this.cacheWriter.readNode(id);
     callback(null, node)
-  },
+  };
+
   readRootCall(callName, callValue, callback) {
     this.cacheWriter.readRootCall(callName, callValue, callback);
   }
