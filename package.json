@@ -1,0 +1,28 @@
+{
+  "name": "relay-cache-manager",
+  "version": "0.1.0",
+  "description": "An implementation of the RelayCacheManager for local data caching in Relay",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ConciergeAuctions/relay-cache-manager.git"
+  },
+  "keywords": [
+    "Relay",
+    "cache",
+    "localStorage",
+    "React"
+  ],
+  "author": "Brandon Dail",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ConciergeAuctions/relay-cache-manager/issues"
+  },
+  "homepage": "https://github.com/ConciergeAuctions/relay-cache-manager#readme",
+  "peerDependencies": {
+    "react-relay": "^0.9.2"
+  }
+}
