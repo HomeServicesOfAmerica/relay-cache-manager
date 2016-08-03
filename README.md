@@ -21,5 +21,5 @@ Currently `RelayEnvironment` does not expose a way to inject a `CacheManager`, s
 ```js
 import CacheManager from 'relay-cache-manager';
 const cacheManager = new CacheManager();
-Relay.Store._storeData.injectCacheManager(cacheManager);
+Relay.Store.getStoreData().injectCacheManager(cacheManager);
 ```
