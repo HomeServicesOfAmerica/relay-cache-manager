@@ -1,5 +1,7 @@
 import GraphQLRange from 'react-relay/lib/GraphQLRange';
 
+const CACHE_KEY = '__RelayCacheManager__'
+
 /**
  * Stores field metadata and values, provides
  * an interface to deserialized cached data
@@ -53,11 +55,15 @@ class CacheRecordStore {
  */
 class CacheWriter {
   constructor() {
-    let localCache = localStorage.getItem('cache');
-    if (localCache) {
-      localCache = JSON.parse(localCache).cache;
-      this.cache = CacheRecordStore.fromJSON(localCache);
-    } else {
+    try {
+      let localCache = localStorage.getItem(CACHE_KEY);
+      if (localCache) {
+        localCache = JSON.parse(localCache).cache;
+        this.cache = CacheRecordStore.fromJSON(localCache);
+      } else {
+        this.cache = new CacheRecordStore();
+      }
+    } catch(err) {
       this.cache = new CacheRecordStore();
     }
   }
@@ -72,6 +78,12 @@ class CacheWriter {
     }
     record[field] = value;
     this.cache.records[dataId] = record;
+    try {
+      const serialized = JSON.stringify(this.cache);
+      localStorage.setItem(CACHE_KEY, serialized);
+    } catch (err) {
+      /* noop */
+    }
   }
 
   writeNode(dataId, record) {
