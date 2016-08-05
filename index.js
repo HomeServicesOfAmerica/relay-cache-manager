@@ -101,7 +101,7 @@ class CacheWriter {
 
   readRootCall(callName, callValue, callback) {
     const dataId = this.cache.rootCallMap[callName];
-    callback(null, dataId)
+    setImmediate(callback.bind(null, null, dataId));
   }
 
 }
@@ -125,10 +125,10 @@ export default class RelayCacheManager {
   getAllRecords() {
     return this.cacheWriter.cache.records;
   };
-  
+
   readNode(id, callback) {
     const node = this.cacheWriter.readNode(id);
-    callback(null, node)
+    setImmediate(callback.bind(null, null, node));
   };
 
   readRootCall(callName, callValue, callback) {
