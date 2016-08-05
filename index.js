@@ -58,7 +58,7 @@ class CacheWriter {
     try {
       let localCache = localStorage.getItem(CACHE_KEY);
       if (localCache) {
-        localCache = JSON.parse(localCache).cache;
+        localCache = JSON.parse(localCache);
         this.cache = CacheRecordStore.fromJSON(localCache);
       } else {
         this.cache = new CacheRecordStore();
