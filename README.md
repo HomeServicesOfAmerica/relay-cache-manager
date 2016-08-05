@@ -16,7 +16,7 @@ $ npm install --save relay-cache-manager
 
 ## Usage
 
-Currently `RelayEnvironment` does not expose a way to inject a `CacheManager`, so you have to inject it directly from the `RelayStoreData` instance used by your store. You can access that via the `_storeData` property on your `RelayEnvironment` instance. If you're using `Relay.Store` you can just do:
+[Until `RelayEnvironment` exposes `injectCacheManager`](https://github.com/facebook/relay/pull/1320) you have to inject it directly from the `RelayStoreData` instance used by your store. You can access that via the `getStoreData()` method on your `RelayEnvironment` instance. If you're using `Relay.Store` you can just do:
 
 ```js
 import CacheManager from 'relay-cache-manager';
