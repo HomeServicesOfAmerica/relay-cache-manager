@@ -111,7 +111,8 @@ export default class RelayCacheManager {
     this.cacheWriter = new CacheWriter();
   }
   clear() {
-    return;
+    localStorage.removeItem(CACHE_KEY);
+    this.cacheWriter = new CacheWriter();
   };
 
   getMutationWriter() {
