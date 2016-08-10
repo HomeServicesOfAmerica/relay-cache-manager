@@ -23,3 +23,9 @@ import CacheManager from 'relay-cache-manager';
 const cacheManager = new CacheManager();
 Relay.Store.getStoreData().injectCacheManager(cacheManager);
 ```
+
+If you wish, you can specify a key for the cache to use in the constructor, like so:
+
+```js
+const cacheManager = new CacheManager('testCacheKey');
+```
