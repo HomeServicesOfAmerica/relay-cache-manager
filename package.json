@@ -1,6 +1,6 @@
 {
   "name": "relay-cache-manager",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "An implementation of the RelayCacheManager for local data caching in Relay",
   "main": "lib/index.js",
   "scripts": {
