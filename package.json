@@ -4,7 +4,6 @@
   "description": "An implementation of the RelayCacheManager for local data caching in Relay",
   "main": "lib/index.js",
   "scripts": {
-    "test": "jest",
     "build": "babel src --out-dir lib",
     "prepublish": "npm run build"
   },
