@@ -8,6 +8,8 @@
 import CacheRecordStore from './CacheRecordStore';
 import type { CacheRecord } from './CacheRecordStore';
 
+import localForage from 'localforage';
+
 const DEFAULT_CACHE_KEY: string = '__RelayCacheManager__';
 
 type CacheWriterOptions = {
@@ -20,9 +22,8 @@ export default class CacheWriter {
   constructor(options: CacheWriterOptions = {}) {
     this.cacheKey = options.cacheKey || DEFAULT_CACHE_KEY
     try {
-      let localCache = localStorage.getItem(this.cacheKey);
+      let localCache = localForage.getItem(this.cacheKey);
       if (localCache) {
-        localCache = JSON.parse(localCache);
         this.cache = CacheRecordStore.fromJSON(localCache);
       } else {
         this.cache = new CacheRecordStore();
@@ -33,7 +34,7 @@ export default class CacheWriter {
   }
 
   clearStorage() {
-    localStorage.removeItem(this.cacheKey);
+    localForage.removeItem(this.cacheKey);
     this.cache = new CacheRecordStore();
   }
 
@@ -53,8 +54,7 @@ export default class CacheWriter {
     record[field] = value;
     this.cache.records[dataId] = record;
     try {
-      const serialized = JSON.stringify(this.cache);
-      localStorage.setItem(this.cacheKey, serialized);
+      localForage.setItem(this.cacheKey, this.cache);
     } catch (err) {
       /* noop */
     }
