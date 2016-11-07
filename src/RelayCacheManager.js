@@ -8,6 +8,7 @@ import CacheWriter from './CacheWriter';
 
 type RelayCacheManagerOptions = {
   cacheKey?: string,
+  localForage?: mixed,
 }
 
 export default class RelayCacheManager {
