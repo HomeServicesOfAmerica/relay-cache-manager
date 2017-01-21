@@ -49,11 +49,11 @@ export type CacheRecord = {
 
 export type CacheRecordMap = {
   [dataId: string]: CacheRecord,
-}
+};
 
 export type CacheRootCallMap = {
   [root: string]: string,
-}
+};
 
 export default class CacheRecordStore {
   records: CacheRecordMap;
@@ -71,7 +71,7 @@ export default class CacheRecordStore {
     identifyingArgValue: string,
     dataId: string
   ) {
-    this.rootCallMap[storageKey] = dataId;
+    this.rootCallMap[storageKey + identifyingArgValue] = dataId;
   }
 
   writeRecord(
@@ -85,28 +85,30 @@ export default class CacheRecordStore {
     callName: string,
     callValue: string
   ): ?string {
-    return this.rootCallMap[callName];
+    return this.rootCallMap[callName + callValue];
   }
 
   readNode(dataID: string): ?CacheRecord {
     return this.records[dataID] || null;
   }
 
-  /**
-   * Takes an object that represents a partially
-   * deserialized instance of CacheRecordStore
-   * and creates a new instance from it. This is required
-   * so that __range__ values can be correctly restored.
-   */
-  static fromJSON({ records, rootCallMap }) {
-    for (var key in records) {
+  /* To ingest previously serialized JSON after an async load */
+  ingestJSON({
+    records,
+    rootCallMap
+  } : {
+    records: CacheRecordMap,
+    rootCallMap: CacheRootCallMap
+  }) {
+    for (const key in records) {
       const record = records[key];
       const range = record.__range__;
       if (range) {
         record.__range__ = GraphQLRange.fromJSON(range)
       }
-     }
-    return new CacheRecordStore(records, rootCallMap);
-  }
+      this.records[key] = record;
+    }
 
+    Object.assign(this.rootCallMap, rootCallMap);
+  }
 }

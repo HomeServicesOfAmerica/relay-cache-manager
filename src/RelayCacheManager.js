@@ -6,9 +6,9 @@
 
 import CacheWriter from './CacheWriter';
 
-type RelayCacheManagerOptions = {
-  cacheKey?: string,
-}
+import type { CacheWriterOptions } from './CacheWriter';
+
+type RelayCacheManagerOptions = CacheWriterOptions;
 
 export default class RelayCacheManager {
   cacheWriter: CacheWriter;
@@ -16,7 +16,7 @@ export default class RelayCacheManager {
     this.cacheWriter = new CacheWriter(options);
   }
 
-  clear() {
+  clear(): void {
     this.cacheWriter.clearStorage();
   };
 
@@ -32,12 +32,15 @@ export default class RelayCacheManager {
     return this.cacheWriter.cache.records;
   };
 
+  getAllRootCalls() {
+    return this.cacheWriter.cache.rootCallMap;
+  }
+
   readNode(
     id: string,
     callback: (error: any, value: any) => void
   ) {
-    const node = this.cacheWriter.readNode(id);
-    setImmediate(callback.bind(null, null, node));
+    this.cacheWriter.readNode(id, callback);
   };
 
   readRootCall(
