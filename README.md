@@ -1,5 +1,7 @@
 # relay-cache-manager
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/ConciergeAuctions/relay-cache-manager.svg)](https://greenkeeper.io/)
+
 > A CacheManager implementation for local data caching in Relay
 
 
