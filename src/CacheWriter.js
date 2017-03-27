@@ -8,10 +8,13 @@
 import CacheRecordStore from './CacheRecordStore';
 import type { CacheRecord } from './CacheRecordStore';
 
+import localForage from 'localforage';
+
 const DEFAULT_CACHE_KEY: string = '__RelayCacheManager__';
 
 type CacheWriterOptions = {
   cacheKey?: string,
+  localForage?: mixed,
 }
 
 export default class CacheWriter {
@@ -19,22 +22,23 @@ export default class CacheWriter {
   cacheKey: string;
   constructor(options: CacheWriterOptions = {}) {
     this.cacheKey = options.cacheKey || DEFAULT_CACHE_KEY
-    try {
-      let localCache = localStorage.getItem(this.cacheKey);
-      if (localCache) {
-        localCache = JSON.parse(localCache);
-        this.cache = CacheRecordStore.fromJSON(localCache);
-      } else {
-        this.cache = new CacheRecordStore();
-      }
-    } catch(err) {
-      this.cache = new CacheRecordStore();
-    }
+    localForage.config(options.localForage || {});
+
+    localForage.getItem(this.cacheKey)
+      .then(localCache => {
+        if (!localCache) {
+          this.cache = new CacheRecordStore();
+        } else {
+          this.cache = CacheRecordStore.fromJSON(localCache)
+        }
+      })
+      .catch(err => this.cache = new CacheRecordStore());
   }
 
   clearStorage() {
-    localStorage.removeItem(this.cacheKey);
-    this.cache = new CacheRecordStore();
+    localForage.removeItem(this.cacheKey)
+      .then(() => this.cache = new CacheRecordStore())
+      .catch(err => this.cache = new CacheRecordStore());
   }
 
   writeField(
@@ -52,12 +56,7 @@ export default class CacheWriter {
     }
     record[field] = value;
     this.cache.records[dataId] = record;
-    try {
-      const serialized = JSON.stringify(this.cache);
-      localStorage.setItem(this.cacheKey, serialized);
-    } catch (err) {
-      /* noop */
-    }
+    localForage.setItem(this.cacheKey, this.cache);
   }
 
   writeNode(dataId: string, record: CacheRecord) {
