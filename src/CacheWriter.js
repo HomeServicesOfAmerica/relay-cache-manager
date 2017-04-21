@@ -6,34 +6,42 @@
  */
 
 import CacheRecordStore from './CacheRecordStore';
+import LocalStorageCacheStorageAdapter from './LocalStorageCacheStorageAdapter';
 import type { CacheRecord } from './CacheRecordStore';
 
 const DEFAULT_CACHE_KEY: string = '__RelayCacheManager__';
 
-type CacheWriterOptions = {
+export type CacheStorageAdapter = {
+  getItem(key: string, callback: (error: any, value: ?string) => void): void;
+  setItem(key: string, data: string): void;
+  removeItem(key: string): void;
+};
+
+export type CacheWriterOptions = {
   cacheKey?: string,
-}
+  cacheStorageAdapter?: CacheStorageAdapter,
+};
 
 export default class CacheWriter {
   cache: CacheRecordStore;
+  cacheStorageAdapter: CacheStorageAdapter;
   cacheKey: string;
+
   constructor(options: CacheWriterOptions = {}) {
-    this.cacheKey = options.cacheKey || DEFAULT_CACHE_KEY
-    try {
-      let localCache = localStorage.getItem(this.cacheKey);
-      if (localCache) {
-        localCache = JSON.parse(localCache);
-        this.cache = CacheRecordStore.fromJSON(localCache);
-      } else {
-        this.cache = new CacheRecordStore();
+    this.cacheKey = options.cacheKey || DEFAULT_CACHE_KEY;
+    this.cacheStorageAdapter = options.cacheStorageAdapter || new LocalStorageCacheStorageAdapter();
+
+    this.cache = new CacheRecordStore();
+
+    this.cacheStorageAdapter.getItem(this.cacheKey, (error: any, value: ?string) => {
+      if (value && !error) {
+        this.cache.ingestJSON(JSON.parse(value));
       }
-    } catch(err) {
-      this.cache = new CacheRecordStore();
-    }
+    });
   }
 
   clearStorage() {
-    localStorage.removeItem(this.cacheKey);
+    this.cacheStorageAdapter.removeItem(this.cacheKey);
     this.cache = new CacheRecordStore();
   }
 
@@ -48,33 +56,33 @@ export default class CacheWriter {
       record = {
         __dataID__: dataId,
         __typename: typeName,
-      }
+      };
     }
     record[field] = value;
     this.cache.records[dataId] = record;
     try {
       const serialized = JSON.stringify(this.cache);
-      localStorage.setItem(this.cacheKey, serialized);
+      this.cacheStorageAdapter.setItem(this.cacheKey, serialized);
     } catch (err) {
       /* noop */
     }
   }
 
-  writeNode(dataId: string, record: CacheRecord) {
+  writeNode(dataId: string, record: CacheRecord): void {
     this.cache.writeRecord(dataId, record);
   }
 
-  readNode(dataId: string) {
-    const record = this.cache.readNode(dataId)
-    return record;
+  readNode(dataId: string, callback: (error: any, value: any) => void): void {
+    const record = this.cache.readNode(dataId);
+    setImmediate(callback.bind(null, null, record));
   }
 
   writeRootCall(
     storageKey: string,
     identifyingArgValue: string,
     dataId: string
-  ) {
-    this.cache.rootCallMap[storageKey] = dataId;
+  ): void {
+    this.cache.writeRootCall(storageKey, identifyingArgValue, dataId);
   }
 
   readRootCall(
@@ -82,7 +90,7 @@ export default class CacheWriter {
     callValue: string,
     callback: (error: any, value: any) => void
   ) {
-    const dataId = this.cache.rootCallMap[callName];
+    const dataId = this.cache.getDataIdFromRootCallName(callName, callValue);
     setImmediate(callback.bind(null, null, dataId));
   }
 

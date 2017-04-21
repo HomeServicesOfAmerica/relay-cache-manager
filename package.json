@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/ConciergeAuctions/relay-cache-manager#readme",
   "peerDependencies": {
-    "react-relay": "^0.9.2"
+    "react-relay": ">=0.9.2"
   },
   "devDependencies": {
     "babel-cli": "^6.11.4",
